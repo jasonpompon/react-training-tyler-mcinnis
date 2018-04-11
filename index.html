@@ -12,14 +12,27 @@
 
     function FriendsList (props) {
         return (
-            <ul>
-                {props.list.map((name) => (
-                    <li key={name}>
-                        <span>{name}</span>
-                        <button onClick={() => props.onRemoveFriend(name)}>Remove</button>
-                    </li>
-                ))}
-            </ul>
+            <div>
+                <h1>Active Friends</h1>
+                <ul>
+                    {props.list.map((name) => (
+                        <li key={name}>
+                            <span>{name}</span>
+                            <button onClick={() => props.onRemoveFriend(name)}>Remove</button>
+                            <button onClick={() => props.onDeactivate(name)}>Deactivate</button>
+                        </li>
+                    ))}
+                </ul>
+                <h1>Deactive Friends</h1>
+                <ul>
+                    {props.dList.map((name) => (
+                        <li key={name}>
+                            <span>{name}</span>
+                            <button onClick={() => props.onActivate(name)}>Activate</button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
         )
     }
 
@@ -29,18 +42,22 @@
 
             this.state = {
                 friends: ['Jason', 'Tom', 'Paul'],
+                dFriends: ['Elodie'],
                 input: '',
             }
 
             this.handleRemoveFriend = this.handleRemoveFriend.bind(this)
             this.updateInput = this.updateInput.bind(this)
             this.handleAddFriend = this.handleAddFriend.bind(this)
+            this.handleClear = this.handleClear.bind(this)
+            this.handleDeactivate = this.handleDeactivate.bind(this)
+            this.handleActivate = this.handleActivate.bind(this)
         }
 
         handleAddFriend() {
             this.setState((currentState) => {
                 return {
-                    friends: currentState.friends.concat([ currentState.input]),
+                    friends: currentState.friends.concat([currentState.input]),
                     input: '',
                 }
             })
@@ -62,6 +79,31 @@
             })
         }
 
+        handleClear() {
+            this.setState({
+                friends: [],
+                dFriends: [],
+            })
+        }
+
+        handleActivate(name) {
+            this.setState((currentState) => {
+                return {
+                    dFriends: currentState.dFriends.filter((friend) => friend !== name),
+                    friends: currentState.friends.concat([name])
+                }
+            })
+        }
+
+        handleDeactivate(name) {
+            this.setState((currentState) => {
+                return {
+                    friends: currentState.friends.filter((friend) => friend !== name),
+                    dFriends: currentState.dFriends.concat([name])
+                }
+            })
+        }
+
         render() {
             return (
                 <div>
@@ -72,9 +114,13 @@
                         onChange={this.updateInput}
                     />
                     <button onClick={this.handleAddFriend}>Submit</button>
+                    <div><button onClick={this.handleClear}>Clear all</button></div>
                     <FriendsList 
-                        list={this.state.friends} 
+                        list={this.state.friends}
+                        dList={this.state.dFriends} 
                         onRemoveFriend={this.handleRemoveFriend}
+                        onDeactivate={this.handleDeactivate}
+                        onActivate={this.handleActivate}
                     />
                 </div>
             )
